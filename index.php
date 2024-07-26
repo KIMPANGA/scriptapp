@@ -10,15 +10,14 @@ if (empty($_POST['username']) || empty($_POST['email']) || empty($_POST['passwor
     exit;
 }*/
 
-$tel_mb = trim($_POST['tel_mb']);
-$Mail_mb = trim($_POST['Mail_mb']);
-$nom_mb = trim($_POST['nom_mb']);
-$prenom_mb = trim($_POST['Prenom_mb']);
-$sexe_mb = trim($_POST['sexe_mb']);
-$adresseAct_mb = trim($_POST['adresseAct_mb']);
-$acty_mb = trim($_POST['acty_mb']);
-$adress_DOM_mb = trim($_POST['adress_DOM_mb']);
-$Code_membre = trim($_POST['Code_membre']);
+$email_agent = trim($_POST['email_agent']);
+$mot_passe_agent = trim($_POST['mot_passe_agent']);
+$nom_agent = trim($_POST['nom_users']);
+$prenom_agent = trim($_POST['Prenom_users']);
+$sexe_agent = trim($_POST['sexe_agent']);
+$telephone_agent = trim($_POST['telephone_agent']);
+$adresse_agent = trim($_POST['adresse_agent']);
+$code_agent = trim($_POST['Code_agent']);
 
 // Check if username and email already exist
 try {
@@ -27,12 +26,12 @@ try {
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // Prepare SQL statements to check for existing user
-    $sql_username = "SELECT COUNT(*) FROM membre WHERE 1";
+    $sql_username = "SELECT COUNT(*) FROM agent WHERE EMAIL_AGENT = ? and MOT_PASSE_AGENT=?";
     $stmt_username = $conn->prepare($sql_username);
-    $stmt_username->execute();
+    $stmt_username->execute([$email_agent,$mot_passe_agent]);
     $username_count = $stmt_username->fetch(PDO::FETCH_ASSOC);
 
-   
+
 } catch(PDOException $e) {
     echo "Error: " . $e->getMessage();
 }
@@ -49,39 +48,20 @@ $password_hash = password_hash($password, PASSWORD_DEFAULT); Use PASSWORD_DEFAUL
 
 // Insert new user into the database
 try {
-    $sql = "INSERT INTO membre ( `CODE_MEMBRE`, `NOM_MB`, `PRENOM_MB`, `ADRESSE_ACT`, `TYPEACT`, `ADRESSE_DOM`, `TELEPHONE_MB`, `EMAIL_MB`, `SEXE`) VALUES (?,?,?,?,?,?,?,?,?)";
+    $sql = "INSERT INTO agent (`CODE_AGENT`, `NOM_AGENT`, `PRENOM_AGENT`, `TELEPHONE_AGENT`, `ADRESSE_AGENT`, `PHOTO_AGENT`, `EMAIL_AGENT`, `SEXE_AGENT`, `MOT_PASSE_AGENT`) VALUES (?,?,?,?,?,?,?,?,?)";
     $stmt = $conn->prepare($sql);
     $stmt->execute([
-    $Code_membre,
-    $nom_mb,
-    $prenom_mb,
-    $adresseAct_mb,
-    $acty_mb,
-    $tel_mb,
-    $adress_DOM_mb,
-    $Mail_mb,
- $sexe_mb]
+    $code_agent,
+    $nom_agent,
+    $prenom_agent,
+    $telephone_agent,
+    $adresse_agent,
+    "photo1",
+    $email_agent,
+    $sexe_agent,
+    $mot_passe_agent]
 );
-
-if($stmt!=0){
-    $sql_trans= "SELECT * FROM type_transaction WHERE 1";
-    $stmt_typ_trans = $conn->prepare($sql_trans);
-    $stmt_typ_trans->execute();
-    $username_count = $stmt_typ_trans->fetch(PDO::FETCH_ASSOC);
-    $trans=array();
-
-    foreach($username_count as $type)
-    {
-        $temp=array();
-        $temp['type_trans']=$type['ID_TYP_TRANS'];
-        $temp['libelle']=$type['LIBELLE_'];
-        array_push($trans,$temp);
-    }
-    echo json_encode($trans);
-
-}else{
-    echo "echec";
-}
+echo "success";
 }  catch(PDOException $e) {
     echo "Error: " . $e->getMessage();
 }
