@@ -31,8 +31,6 @@ try {
     $stmt_username = $conn->prepare($sql_username);
     $stmt_username->execute();
     $username_count = $stmt_username->fetch(PDO::FETCH_ASSOC);
-
-   
 } catch(PDOException $e) {
     echo "Error: " . $e->getMessage();
 }
@@ -49,8 +47,8 @@ $password_hash = password_hash($password, PASSWORD_DEFAULT); Use PASSWORD_DEFAUL
 
 // Insert new user into the database
 try {
-    $sql = "INSERT INTO membre ( `CODE_MEMBRE`, `NOM_MB`, `PRENOM_MB`, `ADRESSE_ACT`, `TYPEACT`, `ADRESSE_DOM`, `TELEPHONE_MB`, `EMAIL_MB`, `SEXE`) VALUES (?,?,?,?,?,?,?,?,?)";
-    $stmt = $conn->prepare($sql);
+    $sql_user = "INSERT INTO users ( `ID_CODE`, `NOM`, `PRENOM`, `ADRESSE`, `TELEPHONE`, `EMAIL`,'PHOTO', `SEXE`,''MOT_PASSE'`) VALUES (?,?,?,?,?,?,?,?,?)";
+    $stmt = $conn->prepare($sql_user);
     $stmt->execute([
     $Code_membre,
     $nom_mb,
@@ -60,16 +58,64 @@ try {
     $tel_mb,
     $adress_DOM_mb,
     $Mail_mb,
- $sexe_mb]
+  $sexe_mb]
 );
+if($conn->query($sql_user)===TRUE){
+    $last_user_id=$conn->insert_id ;
+    echo "utilisateur ajouté avec succes.ID_CODE:".$last_user_id."<br>";
+
+}else{
+    echo"erreur de la création d'utilisateur"
+}
+// Insertion d'un nouvel agent
+
+try {
+    $sql_agent = "INSERT INTO agent (`ID_CODE`,DATE_NAIS `) VALUES (?,?)";
+    $stmt_agent = $conn->prepare($sql_agent);
+    $stmt_agent ->bind_param('i', $last_user_id);
+    if($stmt_agent->execute()){
+        $last_user_id=$stmt_agent->insert_id;
+
+    }
+echo "Nouvel agent inseré avec succes.CODE_AGENT:".$last_agent_id."<br> ";
+}  catch(PDOException $e) {
+    echo "Erreur lors de la création d'un agent: " . $e->getMessage();
+}
+
+
+// Insertion d'un nouvel membre
+
+try {
+    $sql_membre = "INSERT INTO membre (`CODE_MEMBRE`,ADRESSE_ACT,TYPEACT, `) VALUES (?,?,?)";
+    $stmt_membre = $conn->prepare($sql_membre);
+    $stmt_membre ->bind_param('i', $last_user_id);
+    ifr( $stmt_membre->execute)
+
+    if($stmt_membre->execute()){
+        $last_user_id=$stmt_membre->insert_id;
+
+    }
+echo "Nouvel membre inseré avec succes.CODE_MEMBRE:".$last_membre_id."<br> ";
+}  catch(PDOException $e) {
+    echo "Erreur lors de la création d'un membre: " . $e->getMessage();
+}
+
+
+
+
+
+
+
+$sql_trans= "SELECT * FROM type_transaction WHERE 1";
+$stmt_typ_trans = $conn->prepare($sql_trans);
+$stmt_typ_trans->execute();
+$username_count = $stmt_typ_trans->fetchAll(PDO::FETCH_ASSOC);
+$trans=array();
 
 if($stmt!=0){
-    $sql_trans= "SELECT * FROM type_transaction WHERE 1";
-    $stmt_typ_trans = $conn->prepare($sql_trans);
-    $stmt_typ_trans->execute();
-    $username_count = $stmt_typ_trans->fetch(PDO::FETCH_ASSOC);
-    $trans=array();
-
+    if($username_count!=null)
+    {
+    
     foreach($username_count as $type)
     {
         $temp=array();
@@ -78,7 +124,9 @@ if($stmt!=0){
         array_push($trans,$temp);
     }
     echo json_encode($trans);
-
+    }else{
+    echo "echec";
+    }
 }else{
     echo "echec";
 }

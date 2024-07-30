@@ -20,7 +20,10 @@ try {
     // Check if a user with the provided username exists
     $user = "";
     $username_count=$stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
     if(count($username_count)!=0){
+
         $membres=array();
     foreach ($username_count as $val) {
         # code...
@@ -34,6 +37,7 @@ try {
         $temp['email_agent']=$val['EMAIL_AGENT'];
         array_push($membres,$temp);
     }
+    
     echo json_encode($membres);
     }else{
         

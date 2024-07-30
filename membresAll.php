@@ -2,16 +2,14 @@
 
 // Include database configuration file
 require_once 'db_config.php';
-$code_agent="0EDHOSTW";
 try {
     // Connect to the database using PDO with prepared statements
     $conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // Prepare SQL statements to check for existing user
-    $sql_username = "SELECT CODE_AGENT, NOM_AGENT, PRENOM_AGENT, TELEPHONE_AGENT, ADRESSE_AGENT, PHOTO_AGENT, EMAIL_AGENT, SEXE_AGENT, MOT_PASSE_AGENT, ROLES FROM agent WHERE CODE_AGENT=:code_agent ";
+    $sql_username = "SELECT `CODE_MEMBRE`, `NOM_MB`, `PRENOM_MB`, `ADRESSE_ACT`, `TYPEACT`, `ADRESSE_DOM`, `TELEPHONE_MB`, `EMAIL_MB`, `PHOTO_MB`, `SEXE`, `MOT_PASSE_MB`, CREATED_AT FROM membre ";
     $stmt_username = $conn->prepare($sql_username);
-    $stmt_username->bindParam(":code_agent",$code_agent);
     $stmt_username->execute();
     $username_count = $stmt_username->fetchAll(PDO::FETCH_ASSOC);
     $membres=array();
@@ -19,13 +17,15 @@ try {
     foreach ($username_count as $val) {
         # code...
         $temp=array();
-        $temp['code_agent']=$val['CODE_AGENT'];
-        $temp['nom_agent']=$val['NOM_AGENT'];
-        $temp['prenom_agent']=$val['PRENOM_AGENT'];
-        $temp['telephone_agent']=$val['TELEPHONE_AGENT'];
-        $temp['adresse_agent']=$val['ADRESSE_AGENT'];
-        $temp['photo_agent']=$val['PHOTO_AGENT'];
-        $temp['email_agent']=$val['EMAIL_AGENT'];
+        $temp['code_membre']=$val['CODE_MEMBRE'];
+        $temp['nom_mb']=$val['NOM_MB'];
+        $temp['prenom_mb']=$val['PRENOM_MB'];
+        $temp['type_act']=$val['ADRESSE_ACT'];
+        $temp['adresse_dom']=$val['ADRESSE_DOM'];
+        $temp['tel_mb']=$val['TYPEACT'];
+        $temp['email_mb']=$val['ADRESSE_DOM'];
+        $temp['sexe_mb']=$val['EMAIL_MB'];
+        $temp['date_mb']=$val['CREATED_AT'];
         array_push($membres,$temp);
     }
     echo json_encode($membres);
